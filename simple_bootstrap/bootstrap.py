@@ -24,14 +24,14 @@ def bootstrap(data, n, axis=0, func=np.var, func_kwargs={"ddof" : 1}):
     
     if axis != 0:
         raise NotImplementedError("Only axis == 0 supported.")
+
+    fiducial_output = func(data, axis=axis, **func_kwargs)
     
     if isinstance(data, list):
         assert all([d.shape[1:] == data[0].shape[1:] for d in data])
-        samples = np.zeros((n, *data[0].shape[1:]), dtype=data[0].dtype)
-    else:
-        samples = np.zeros([data.shape[i] if i != axis else n for i in range(data.ndim)], 
-                           dtype=data.dtype)
     
+    samples = np.zeros((n, *fiducial_output.shape), dtype=fiducial_output.dtype)
+
     for i in range(n):
         if isinstance(data, list):
             idx = [np.random.choice(d.shape[0], size=d.shape[0], replace=True) for d in data]
